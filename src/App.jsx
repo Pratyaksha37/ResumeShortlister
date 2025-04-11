@@ -13,7 +13,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
-      <Route path="/analyzer" element={<AnalyzerPage />} />
+      <Route path="analyzer" element={<AnalyzerPage />} /> 
     </Routes>
   )
 }
