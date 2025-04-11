@@ -4,7 +4,7 @@ function Footer() {
       <div className="container">
         <div className="footer-content">
           <div className="footer-left">
-            <h5><img src="/logo.png" alt="ResuMatch" height="30" className="me-2" />ResuMatch</h5>
+            <h5><img src="./images/logo.png" alt="" height="30" className="me-2" />ResuMatch</h5>
             <p>&copy; 2025 ResuMatch. All rights reserved.</p>
           </div>
           <div className="footer-right">

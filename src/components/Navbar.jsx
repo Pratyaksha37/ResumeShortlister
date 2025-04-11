@@ -5,7 +5,7 @@ function Navbar({ activePage = "analyzer" }) {
     <nav className="navbar navbar-expand-lg">
       <div className="container">
         <Link className="navbar-brand" to="/">
-          <h5><img src="/logo.png" alt="ResuMatch" height="40" className="me-2" />ResuMatch</h5>
+          <h4><img src="./images/logo.png" alt="" height="40" className="me-2" />ResuMatch</h4>
         </Link>
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
           <span className="navbar-toggler-icon"></span>
