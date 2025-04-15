@@ -1,7 +1,6 @@
 function Results({ results }) {
   const { structure, grammar, jobMatch, overallScore } = results
   
-  // Determine score levels for styling
   const getScoreLevel = (score) => {
     if (score >= 80) return 'success';
     if (score >= 60) return 'warning';
