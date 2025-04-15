@@ -14,10 +14,7 @@ function LandingPage() {
             <div className="col-lg-6">
               <h1>Transform Your <span>Resume</span> Into Job Opportunities</h1>
               <p>AI-powered resume analyzer that matches your qualifications with job descriptions to maximize your chances of getting interviews.</p>
-              {/* <Link to="analyzer" className="btn btn-primary btn-lg">
-                <i className="fas fa-rocket me-2"></i>
-                Try Now - It's Free
-              </Link> */}
+              
             </div>
             <div className="col-lg-6">
               <img src={heroImage} alt="ResuMatch App" className="img-fluid hero-image" />

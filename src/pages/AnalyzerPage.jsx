@@ -13,14 +13,12 @@ function AnalyzerPage() {
   const [results, setResults] = useState(null)
   const [showResults, setShowResults] = useState(false)
 
-  // Required resume sections
   const requiredSections = [
     'Name', 'Phone', 'Email', 'Links', 'PROFESSIONAL SUMMARY', 'EDUCATION',
     'PROJECTS', 'CERTIFICATIONS', 'SKILLS', 'Computer Languages',
     'Software Packages', 'Co-curricular & POR'
   ]
   
-  // Section regex patterns for detection
   const sectionPatterns = [
     { name: 'header', regex: /^.*?(Phone|Email|LinkedIn)/i },
     { name: 'summary', regex: /\b(PROFESSIONAL\s+SUMMARY|SUMMARY|PROFILE|OBJECTIVE)\b/i },
@@ -34,7 +32,6 @@ function AnalyzerPage() {
     { name: 'activities', regex: /\b(CO-CURRICULAR|EXTRACURRICULAR|ACTIVITIES|ACHIEVEMENTS|POSITIONS OF RESPONSIBILITY|POR)\b/i }
   ]
 
-  // Parse resume to identify sections
   const parseResume = (text) => {
     const sections = {}
     sectionPatterns.forEach(p => sections[p.name] = [])
@@ -43,7 +40,6 @@ function AnalyzerPage() {
     if (lines.length < 5) lines = text.split(/(?:\s{2,}|\n+|•+|⋅+)/)
     lines = lines.filter(line => line.trim().length > 0)
     
-    // Process header first
     let headerEnd = 0
     for (let i = 0; i < Math.min(lines.length, 10); i++) {
       const line = lines[i].trim()
@@ -57,7 +53,6 @@ function AnalyzerPage() {
       }
     }
     
-    // Process remaining content
     let currentSection = 'header'
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i].trim()
@@ -80,7 +75,6 @@ function AnalyzerPage() {
       }
     }
     
-    // Extract skills if missing
     if (sections.skills.length <= 1) {
       for (const line of lines) {
         if (/(\w+\s*[,•|&])+\s*\w+/i.test(line) && 
@@ -90,7 +84,6 @@ function AnalyzerPage() {
       }
     }
     
-    // Extract languages and software if missing
     const allText = lines.join(' ')
     if (sections.languages.length <= 1) {
       const langs = [...allText.matchAll(/(java\s*script|python|java|c\+\+|c#|ruby|typescript|php|swift|kotlin|go|rust|scala|perl)/gi)]
@@ -107,12 +100,10 @@ function AnalyzerPage() {
     return sections
   }
 
-  // Check resume structure
   const checkStructure = (text) => {
     const sections = parseResume(text)
     const results = []
     
-    // Map parsed sections to required sections
     const sectionMapping = {
       'summary': 'PROFESSIONAL SUMMARY',
       'education': 'EDUCATION',
@@ -125,19 +116,16 @@ function AnalyzerPage() {
       'activities': 'Co-curricular & POR'
     }
     
-    // Check personal info
     const firstLine = text.split('\n')[0]
     results.push({ section: 'Name', exists: /^\s*([A-Z][a-z]+\s+([A-Z]\.?\s+)?[A-Z][a-z]+)/.test(firstLine) })
     results.push({ section: 'Phone', exists: /(\+\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/.test(text) })
     results.push({ section: 'Email', exists: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/.test(text) })
     results.push({ section: 'Links', exists: /(LinkedIn|Github|HackerRank|CodeChef|Codeforces|LeetCode|Portfolio|Website)/i.test(text) })
     
-    // Check all other sections
     for (const [key, section] of Object.entries(sectionMapping)) {
       results.push({ section, exists: sections[key] && sections[key].length > 0 })
     }
     
-    // Calculate score (weighted)
     const essentialSections = ['Name', 'Email', 'PROFESSIONAL SUMMARY', 'EDUCATION', 'SKILLS']
     let essentialCount = 0, otherCount = 0
     
@@ -155,10 +143,9 @@ function AnalyzerPage() {
     return { items: results, score, sections }
   }
 
-  // Check grammar
+  
   const checkGrammar = async (sections) => {
     try {
-      // Extract text from relevant sections
       const sectionsToCheck = ['summary', 'projects', 'education']
       const textToCheck = sectionsToCheck.reduce((text, section) => {
         if (sections[section] && sections[section].length) {
@@ -190,7 +177,7 @@ function AnalyzerPage() {
     }
   }
 
-  // Check job match
+  
   const checkJobMatch = (resumeText, jobText) => {
     if (!jobText) return { matches: [], score: 0 }
     
@@ -198,35 +185,29 @@ function AnalyzerPage() {
     const commonWords = ['and', 'the', 'for', 'with', 'that', 'have', 'this', 'are', 'from', 
       'your', 'will', 'you', 'our', 'who', 'should', 'must', 'can', 'able', 'they', 'them']
     
-    // First look for comma-separated or line-separated terms
+      
     const explicitTerms = jobText.split(/,|\n/)
       .map(term => term.trim())
       .filter(term => term.length > 0)
     
-    // Also extract potential multi-word terms
+      
     const multiWordTerms = jobText.toLowerCase().match(/\b[a-z]+\s+[a-z]+\b/g) || []
     
-    // Then extract individual words (but only if not part of a multi-word term)
     const allText = jobText.toLowerCase()
     const jobWords = [...new Set(allText
       .split(/[,.\s()\[\]]+/)
       .filter(word => word.length > 3 && !commonWords.includes(word)))]
     
-    // Combine all possible terms, prioritizing explicit and multi-word terms
     const allTerms = [...explicitTerms, ...multiWordTerms]
     
-    // Add individual words only if they're not part of multi-word terms
     for (const word of jobWords) {
-      // Check if this word is already part of a multi-word term
       if (!multiWordTerms.some(term => term.includes(word))) {
         allTerms.push(word)
       }
     }
     
-    // Remove duplicates and ensure all items are unique
     const uniqueTerms = [...new Set(allTerms)]
     
-    // Check if each term exists in the resume
     const matches = uniqueTerms.map(term => ({
       keyword: term.trim(),
       exists: resumeLower.includes(term.toLowerCase())
@@ -238,7 +219,6 @@ function AnalyzerPage() {
     return { matches, score }
   }
 
-  // Handle analyze click
   const handleAnalyze = async () => {
     if (!resumeText || !jobText) {
       alert('Please provide both resume and job description')
@@ -249,23 +229,18 @@ function AnalyzerPage() {
     setShowResults(false)
     
     try {
-      // Structure analysis
       const structureResult = checkStructure(resumeText)
       
-      // Grammar check
       const grammarResult = await checkGrammar(structureResult.sections)
-      
-      // Job match analysis
+    
       const jobMatchResult = checkJobMatch(resumeText, jobText)
       
-      // Calculate overall score
       const overallScore = (
         structureResult.score * 0.3 + 
         grammarResult.score * 0.3 + 
         jobMatchResult.score * 0.4
       )
       
-      // Set results
       setResults({
         structure: structureResult,
         grammar: grammarResult,

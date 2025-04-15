@@ -3,7 +3,6 @@ import { useRef } from 'react'
 function ResumeUpload({ resumeText, setResumeText }) {
   const fileInputRef = useRef(null)
   
-  // Extract text from PDF
   const extractPdfText = (file) => {
     const fileReader = new FileReader()
     
